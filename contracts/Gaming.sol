@@ -45,6 +45,11 @@ contract Gaming {
             }
         }
     }
+// Here the 'bool guess' as 'true' states that the mystery number
+// is higher than my displayed number
+
+// Here the 'bool guess' as 'false' states that the mystery number
+// is lower than my displayed number
 
     function winOrLose(uint display, bool guess, uint wager) external payable returns (bool) {
         /* Use true for a higher guess, false for a lower guess */
