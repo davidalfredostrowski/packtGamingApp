@@ -1,0 +1,87 @@
+pragma solidity 0.5.16;
+
+import "truffle/Assert.sol";
+import "truffle/DeployedAddresses.sol";
+import "../contracts/Gaming.sol";
+
+contract TestGaming {
+    uint public initialBalance = 10 ether;
+    Gaming gaming;
+
+    function beforeAll() public {
+        gaming = Gaming(DeployedAddresses.Gaming());
+    }
+
+    function testPlayerWonGuessHigher() public {
+        bool expected = true;
+        bool result = gaming.determineWinner(5, 4, true);
+
+        Assert.equal(expected, result, "The player should have won by guessing the mystery number was higher than their number");
+    }
+
+    function testPlayerLostGuessLower() public {
+        bool expected = false;
+        bool result = gaming.determineWinner(5, 4, false);
+
+        Assert.equal(expected, result, "The player should have lost by guessing the mystery number was lower than their number");
+    }
+
+    function testPlayerAdded() public {
+        address playerAddress;
+        string memory playerName;
+        uint playerBalance;
+        uint playerWins;
+        uint playerLosses;
+
+        (playerAddress, playerName, playerBalance, playerWins, playerLosses) = gaming.players(address(0));
+        Assert.equal(playerName, "Test Player", "The player should have the name Test Player");
+        Assert.equal(playerBalance, 0, "The player should have a zero balance");
+        Assert.equal(playerWins, 1, "The player should have 1 win");
+        Assert.equal(playerLosses, 2, "The player should have 2 losses");
+    }
+
+    function testGameIsOnline() public {
+        bool online = gaming.getOnline();
+
+        Assert.isTrue(online, "The game should be initially online");
+    }
+
+// Here the 'bool guess' as 'true' states that the mystery number
+// is higher than my displayed number
+
+// Here the 'bool guess' as 'false' states that the mystery number
+// is lower than my displayed number
+
+// the 'mystery number' is assigned to a value that will beat the mystery
+// number every single time. 
+   
+//    function testplayerLost() public { 
+
+//	 bool expected = false;
+//         bool result = gaming.winOrLose(11, false ,1);
+//	 Assert.equal(expected, result, " The player lost regardless of the mystery number ");
+//
+//
+//}
+
+//    function testplayerWon() public {
+//
+//       bool expected = false;
+//         // I am at the point where the mystery number is going to be higher
+//         // than my displayed number that I am identifying as zero or one.
+//	 bool result = gaming.winOrLose(0, false ,1);
+//         Assert.equal(expected, result, " The player won regardless of the mystery number ");
+
+
+//}
+
+
+
+
+
+
+
+
+
+}
+

@@ -1,0 +1,83 @@
+const Gaming = artifacts.require('./Gaming.sol')
+
+contract('Gaming', async (accounts) => {
+  let gaming
+  const owner = accounts[0]
+  const player1 = accounts[1]
+
+  before(async () => {
+    gaming = await Gaming.deployed()
+    const fundGame = await gaming.fundGame({from: owner, value: web3.utils.toWei('10', 'ether')})
+ // test wager 1
+	
+
+   //onst sendMoney = await gaming.fundGame({from: player1, value: web3.utils.toWei('1','ether')}).then((f) => console.log(f))
+
+
+
+  })
+
+//  it('Should remove appropriate amount of funds', async() => {
+//      //obtain the related key
+//      const jsonData = require('./Gaming.json')
+//      networkKey = Object.keys(jsonData['networks'])[Object.keys(jsonData.networks).length-1]
+//      const balance = await web.eth.getBalance(jsonData['networks'][networkKey]["address"])
+//      fundGame = await gaming.fundGame({from: accounts[0], value: web3.utils.toWei('10','ether')})
+//      const prebalance = await web.eth.getBalance(jsonData['networks'][networkKey]["address"])
+
+//      const prebalanceInEther = Number(web3.utils.fromWei(preBalance))
+//      fundGame = await gaming.withdrawFunds()
+//      const postBalance = await web.eth.getBalance(jsonData['networks'][networkKey]["address"])
+//      const postBalanceInEther = Number(web3.utils.fromWei(postBalance));
+//      assert.equal(prebalanceInEther, ( postBalanceInEther + 10 ), 'the amount will have decreased by 10 either')
+
+
+  //}
+//)
+
+
+
+
+  it('Should record player losses 1.1', async() => {
+    const initialBalance = await web3.eth.getBalance(player1)
+//    const initialBalanceInEther = Number(web3.utils.fromWei(initialBalance, 'ether'))
+
+    const initialBalanceInEther = Number(web3.utils.fromWei('1', 'ether'))
+
+    // I have to perform the equivalent of the send !!!!!!!
+	  // it needs to occur in the application rightnow....
+
+
+    const gameRound  = await gaming.winOrLose(10, true)
+
+   // const gameRound = await gaming.winOrLose(2, true, {
+   //   from: player1,
+   //   value: web3.utils.toWei('1', 'ether')
+   // })
+    const postBalance = await web3.eth.getBalance(player1)
+ 
+    const postBalanceInEther = Number(web3.utils.fromWei(postBalance, 'ether'))
+
+    const playerStats = await gaming.players(player1)
+  //  assert.equal(playerStats[1].toNumber(), 1, 'The player should have 1 loss')
+    assert.isAtLeast(initialBalanceInEther, postBalanceInEther + .9, 'Player account should have decreased by the amount of the wager')
+  })
+
+  it('Should record player wins 2', async() => {
+    
+
+//    gaming = await Gaming.deployed()
+
+
+//	  const sendMoney = await gaming.fundGame().send({from: player1, value: web3.utils.toWei('1','ether')}).then((f) => console.log(f))
+
+
+
+	  const gameRound = await gaming.winOrLose(0, false)
+
+
+  const playerStats = await gaming.players(player1)
+    assert.equal(playerStats.wins.toNumber(), 1, 'The player should have 1 win')
+  })
+})
+

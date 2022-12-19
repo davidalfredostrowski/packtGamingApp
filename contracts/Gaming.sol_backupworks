@@ -24,17 +24,6 @@ contract Gaming {
         players[address(0)] = Player(msg.sender, "Test Player", 0, 1, 2);
     }
 
-    modifier isOwner() {
-        require(msg.sender == owner, "Only owner can call this function");
-        _;
-    }
-
-    event PlayerWon(address player, uint amount, uint mysteryNumber, uint displayedNumber);
-    event PlayerLost(address player, uint amount, uint mysteryNumber, uint displayedNumber);
-
-    event GameFunded(address funder, uint amount);
-    
-
     function getOnline() external view returns ( bool ){
 	return online;
     }
@@ -62,51 +51,20 @@ contract Gaming {
 // Here the 'bool guess' as 'false' states that the mystery number
 // is lower than my displayed number
 
-
-// the 'sender' could in this case be the 'owner'
-// how to obtain the contract balance in the console?
-
-
-    function winOrLose(uint display, bool guess) external payable returns (bool) {
+    function winOrLose(uint display, bool guess, uint wager) external payable returns (bool) {
         /* Use true for a higher guess, false for a lower guess */
         require(online == true);
-        // just to simplify for our test....
-        //msg.value = 1;
-	// the 'leading' send is invoked by the application
-	//msg.value is replaced with 1
-
-        require(msg.sender.balance > 1, "Insufficient funds");
+        require(msg.sender.balance > msg.value, "Insufficient funds");
         uint mysteryNumber_ = mysteryNumber();
         bool isWinner = determineWinner(mysteryNumber_, display, guess);
         if (isWinner == true) {
             /* Player won */
-            // msg.value is replaced with 1
-	    msg.sender.transfer(1 * 2); // return the amount wagered plus the ether sent with the transaction
+            msg.sender.transfer(wager * 2); // return the amount wagered plus the ether sent with the transaction
             return true;
         } else if (isWinner == false) {
-            /* Player lost .... they already send the money to contract  */
-            /*  in the case of a loss.... it stays in the conract !!!!!! */
-            /* no need to delete / send  */
+            /* Player lost */
             return false;
         }
     }
-
-
-    function withdrawFunds() public isOwner {
-        msg.sender.transfer(address(this).balance);
-    }
-
-    function fundGame() public isOwner payable {
-        emit GameFunded(msg.sender, msg.value);
-    }
-    function sendCoin() public payable {
-}
-
-    function() external payable {
-    }
-
-
-
-
 }
 

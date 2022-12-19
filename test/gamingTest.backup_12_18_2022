@@ -1,0 +1,46 @@
+const Gaming = artifacts.require('./Gaming.sol')
+
+contract('Gaming', async (accounts) => {
+  let gaming
+  const owner = accounts[0]
+  const player1 = accounts[1]
+
+  before(async () => {
+    gaming = await Gaming.deployed()
+//    const fundGame = await gaming.fundGame({from: owner, value: web3.utils.toWei('10', 'ether')})
+  })
+
+  it('Should remove appropriate amount of funds', async() => {
+
+
+const jsonData = require('./Gaming.json')
+gaming = await Gaming.deployed()
+networkKey = await Object.keys(jsonData['networks'])[Object.keys(jsonData.networks).length-1]
+console.log("networkKey")
+console.log(networkKey)
+const balance = await web3.eth.getBalance(jsonData['networks'][networkKey]["address"])
+console.log("address = ")
+console.log(jsonData['networks'][networkKey]["address"])
+
+
+
+
+ fundGame = await gaming.fundGame({from: accounts[0], value: web3.utils.toWei('10','ether')})
+const prebalance = await web3.eth.getBalance(jsonData['networks'][networkKey]["address"])
+const prebalanceInEther = await Number(web3.utils.fromWei(prebalance))
+console.log("prebalanceInEther")
+console.log(prebalanceInEther)
+
+
+	  fundGame = await gaming.withdrawFunds()
+const postBalance = await web3.eth.getBalance(jsonData['networks'][networkKey]["address"])
+const postBalanceInEther = Number(web3.utils.fromWei(postBalance));
+console.log("here is the postBalanceInEther")
+console.log(postBalanceInEther)
+	  assert.isAtLeast(prebalanceInEther, 9, 'contract should have at least 10')
+	  assert.equal(prebalanceInEther, ( postBalanceInEther + 10 ), 'the amount will have decreased by 10 either')
+
+})
+
+})
+
