@@ -7,6 +7,7 @@ contract Gaming {
 
  
     mapping (address => Player) public players; 
+    
     uint public wins;    /* public didnt allow me any advantage */
     uint public losses;
  
@@ -70,23 +71,18 @@ contract Gaming {
     function winOrLose(uint display, bool guess) external payable returns (bool) {
         /* Use true for a higher guess, false for a lower guess */
         require(online == true);
-        // just to simplify for our test....
-        //msg.value = 1;
-	// the 'leading' send is invoked by the application
-	//msg.value is replaced with 1
-
         require(msg.sender.balance > 1, "Insufficient funds");
         uint mysteryNumber_ = mysteryNumber();
         bool isWinner = determineWinner(mysteryNumber_, display, guess);
         if (isWinner == true) {
             /* Player won */
-            // msg.value is replaced with 1
-	    msg.sender.transfer(1 * 2); // return the amount wagered plus the ether sent with the transaction
+            msg.sender.transfer(msg.value * 2);
             return true;
         } else if (isWinner == false) {
             /* Player lost .... they already send the money to contract  */
             /*  in the case of a loss.... it stays in the conract !!!!!! */
             /* no need to delete / send  */
+            
             return false;
         }
     }
@@ -95,15 +91,34 @@ contract Gaming {
     function withdrawFunds() public isOwner {
         msg.sender.transfer(address(this).balance);
     }
-
+   
     function fundGame() public isOwner payable {
         emit GameFunded(msg.sender, msg.value);
     }
-    function sendCoin() public payable {
-}
+    
 
-    function() external payable {
+    function sftwo(address payable _to) external payable {
+       bool sent =        _to.send(msg.value);
+       require(sent, "failed to send ether");
+
     }
+
+    function sendToPlayer(address payable _to) external payable {
+       bool sent =        _to.send(msg.value);
+       require(sent, "failed to send ether");
+
+    }
+
+
+
+    function transferFnew() public isOwner payable{
+        msg.sender.transfer(msg.value);
+    }
+
+    function sendCoin() public payable{ 
+    } 
+
+
 
 
 

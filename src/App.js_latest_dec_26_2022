@@ -4,7 +4,7 @@ import './App.css';
 
 
 
-class App extends Component{
+class Form extends Component{
 
 
     constructor(props){
@@ -12,7 +12,7 @@ class App extends Component{
 	this.state = { selectedOption: ' ', wager: 0, account: '', player1: '' ,
             playerNumber: '',
             highLow: 'lower',
-            wager: '2',
+            wager: '',
             historyData: [],
             snackbar: false,
             message: '',
@@ -21,11 +21,12 @@ class App extends Component{
             player1: '',
 	    web3: '',
             displayNumber: '', 
-	    won: '',
-            playerBalance: ''
+	    won: ''
+
 	}
 	this.handleChange = this.handleChange.bind(this)
         this.onValueChange = this.onValueChange.bind(this);
+	this.handleSubmit = this.handleSubmit.bind(this)
     }
 
 
@@ -37,7 +38,7 @@ class App extends Component{
     async loadBlockchainData(){
         alert ("loadblockchaindata starts again")
 	console.log('just before the connect')
-	const web3 = new Web3(new Web3.providers.HttpProvider("http://ec2-35-88-37-88.us-west-2.compute.amazonaws.com:8545"))
+	const web3 = new Web3(new Web3.providers.HttpProvider("http://ec2-35-88-33-45.us-west-2.compute.amazonaws.com:8545"))
 	this.setState({ web3 : web3 })
 	const accounts = await web3.eth.getAccounts()
 	console.log("account", accounts[0])
@@ -78,13 +79,13 @@ class App extends Component{
         const initialPlayerBalance = await web3.eth.getBalance(player1)
         const initialPlayerBalanceInEither = Number(web3.utils.fromWei(initialPlayerBalance, 'ether'))
         alert("initialPlayerBalanceInEither player1:" + String( initialPlayerBalanceInEither ))
-        ans = await this.state.contract.methods.winOrLose(0, true ).send({from: this.state.player1 ,value: this.state.web3.utils.toWei('4', 'ether')}).then((f) => console.log(f))
+ ans = await this.state.contract.methods.winOrLose(0, true ).send({from: this.state.player1 ,value: this.state.web3.utils.toWei('2', 'ether')}).then((f) => console.log(f))
 
         const updatedPlayerBalance = await web3.eth.getBalance(player1)
         const updatedPlayerBalanceInEither = Number(web3.utils.fromWei(updatedPlayerBalance, 'ether'))
         alert("updatedPlayerBalanceInEither:" + String( updatedPlayerBalanceInEither ))
 
-        this.setState({ account: accounts[0] })
+                this.setState({ account: accounts[0] })
 
         var randNum =  Math.floor(Math.random() * 10) + 1;
         this.setState({displayNumber : randNum })
@@ -94,9 +95,21 @@ class App extends Component{
 
 
 
- play = async () => {
 
-        const { selectedOption, wager } = this.state
+// Form submitting logic, prevent default page refresh
+async handleSubmit(event){
+        let   initialBalance = await this.state.web3.eth.getBalance(this.state.owner)
+        alert("just after handle submit ...initialBalance  after the game ***  " + String(initialBalance));
+        console.log("initialBalance           ***  ",initialBalance)
+  let      initialBalanceInEther = Number(this.state.web3.utils.fromWei(initialBalance, 'ether'))
+        alert("initialBalanceInEther after game   " + String(initialBalanceInEther));
+        console.log("initialBalanceInEther",initialBalanceInEther)
+
+	const { selectedOption, wager } = this.state
+	event.preventDefault()
+	console.log(this.state.selectedOption)
+	alert("this.state.selectedOption")
+	alert( this.state.selectedOption)
 	let  HigherThanMysteryNumber = "true"
 	if (this.state.selectedOption == "High") {
 		HigherThanMysteryNumber = true
@@ -104,16 +117,45 @@ class App extends Component{
 	else{
 		HigherThanMysteryNumber = false
 	}
-	// 'true' is mystery number higher than mine. 
-	 console.log("this.state.wager ",this.state.wager)	
-        let ans = await this.state.contract.methods.winOrLose(this.state.displayNumber, true ).send({from: this.state.player1 ,value: this.state.web3.utils.toWei(this.state.wager, 'ether')}).then((f) => console.log(f))
+ 	alert("HigherThanMysteryNumber 5")
+ 	alert(HigherThanMysteryNumber)
+	if (HigherThanMysteryNumber) { 
+		alert ("yessss")
+	}
+	console.log("HigherThanMysteryNumber5 ",HigherThanMysteryNumber)
+	console.log("this.state.wager 6",this.state.wager)	
+	// 
+	//this.state.contract. <method> !!!!!
+	// do I need await for this method? 
+	// works!!!!!  
+	//
+	//
+        console.log("this.state.displayNumber", this.state.displayNumber)	
+// let ans = await this.state.contract.methods.winOrLose(this.state.displayNumber, HigherThanMysteryNumber).send({from: this.state.player1 ,value: this.state.web3.utils.toWei(this.state.wager, 'ether')}).then((f) => console.log(f))
+ 
 
-        let updatedPlayerBalance = await this.state.web3.eth.getBalance(this.state.player1)
-        let updatedPlayerBalanceInEther = Number(this.state.web3.utils.fromWei(updatedPlayerBalance, 'ether'))
+
+let	 ans = await this.state.contract.methods.winOrLose(0, true ).send({from: this.state.player1 ,value: this.state.web3.utils.toWei('2', 'ether')}).then((f) => console.log(f))
 
 
-	this.setState( { playerBalance : updatedPlayerBalanceInEther } )
+	console.log("ans = ", ans)
+        alert("ans = " + String( ans)) 
 
+	this.setState( { won : ans }) 
+
+	//this.state.contract.methods.winOrLose(10, HigherThanMysteryNumber).send({from: this.state.player1 ,value: this.state.web3.utils.toWei(this.state.wager, 'ether')}).then((result) => console.log(result.logs(0)))
+	//this.state.contract.methods.winOrLose(10, false).send({from: this.state.player1 ,value: this.state.web3.utils.toWei('1', 'ether')}).then((f) => console.log(f))
+	//this.state.contract.methods.winOrLose(10, HigherThanMysteryNumber).send({from: this.state.player1 ,value: this.state.web3.utils.toWei('1', 'ether')}).then((f) => console.log(f))
+
+	console.log("player1, account1", this.state.player1)
+
+    	initialBalance = await this.state.web3.eth.getBalance(this.state.player1)
+	alert("initialBalance     " + String(initialBalance));
+	alert(initialBalance)
+	console.log("initialBalance",initialBalance)
+	const currentBalanceInEther = Number(this.state.web3.utils.fromWei(initialBalance, 'ether'))
+	alert("currentBalanceInEther   " + String(currentBalanceInEther));
+	console.log("currentBalanceInEther",currentBalanceInEther)
 
 }
 
@@ -131,14 +173,14 @@ handleChange(event){
     this.setState({
       selectedOption: event.target.value
     });
-}
+  }
 // Return a controlled form i.e. values of the
 // input field not stored in DOM values are exist
 // in react component itself as state
 render(){
 	return(
-       <>
-	<div className="radio">
+	<form onSubmit={this.handleSubmit}>
+        <div className="radio">
           <label>
             <input
               type="radio"
@@ -160,29 +202,36 @@ render(){
             Mystery Number is lower
           </label>
         </div>      
-
-
-
-	<div>
+        <div>
           Selected option is : {this.state.selectedOption}
         </div>
 	<div>
 		Display number:      {this.state.displayNumber}
         </div>
-
         <div>
-		player balance : { this.state.playerBalance }
+		Last Round (won/lost) (true/false): {this.state.won}
         </div>
 
 
 
-        <div>
-                   <button onClick={this.play}> Play Round</button>
-        </div>
-
-</>
+<div>
+		Current History is: {  JSON.stringify(this.state.historyData) }
+</div>
+		<div>
+		<label htmlFor='wager'>wager</label>
+		<input
+			name='wager'
+			placeholder='0'
+			value = {this.state.wager}
+			onChange={this.handleChange}
+		/>
+		</div>
+				<div>
+		<button>Play Round!</button>
+		</div>
+	</form>
 	)
 }
 }
 
-export default App 
+export default Form
